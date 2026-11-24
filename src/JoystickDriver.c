@@ -2,6 +2,7 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/adc.h>
+#include "JoystickDriver.h"
 
 void joystickInitPins(void)
 {
@@ -36,20 +37,53 @@ void joystickInitADC(void)
 }
 
 
-typedef struct {
-    uint16_t axis0; //only one axis matters.
-} JoystickReading; //the C equivalent of a "tuple".
 
-JoystickReading joystickRead(uint32_t adc)
-{ //return type is JoystickReading. function name is joystickRead.
-    JoystickReading reading; //declare the "tuple".
+uint16_t joystickRead(uint32_t adc)
+{
+    uint16_t reading; //only one axis matters. 
 
-    adc_start_conversion_regular(adc);
+    adc_start_conversion_regular(adc); //start converting voltage.
 
     while (!adc_eoc(adc)) {
         //wait for the first axis to be ready.
     }
-    reading.axis0 = adc_read_regular(adc); //take first reading.
+    reading = adc_read_regular(adc); //take reading.
 
     return reading; //return reading to main program
+}
+
+
+float joystick_position(uint32_t value) { 
+    /*Normalise the reading between 0 and 1.*/
+    int JOY_BASE = 2110; // Assuming a 12-bit ADC with a midpoint of 2048
+    int DEAD_ZONE = 100; // Define the dead zone threshold
+    int JOY_MIN = 1120;
+    int JOY_MAX = 3120; // Assuming a 12-bit ADC with a maximum of 4095
+    
+    //ignore small movements around the centre 
+    if (value >= JOY_BASE - DEAD_ZONE && 
+        value <= JOY_BASE + DEAD_ZONE) { 
+        return 0.5f; 
+    } 
+ 
+    float result; 
+ 
+    if (value < JOY_BASE) { 
+ 
+        //lower half of the joystick range 
+        result = 0.5f * ((float)value - JOY_MIN)
+                       / (JOY_BASE - JOY_MIN); 
+ 
+    } else { 
+ 
+        //upper half of the joystick range 
+        result = 0.5f + 0.5f * (float)(value - JOY_BASE) 
+                              / (float)(JOY_MAX - JOY_BASE); 
+    } 
+ 
+    //clamp the result 
+    if (result < 0.0f) result = 0.0f; 
+    if (result > 1.0f) result = 1.0f; 
+ 
+    return result; 
 }
