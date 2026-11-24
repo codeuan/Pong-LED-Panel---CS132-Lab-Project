@@ -1,0 +1,1 @@
+/*Converts joystick movements into digital readings via ADC.*/
