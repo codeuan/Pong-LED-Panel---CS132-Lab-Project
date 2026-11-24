@@ -16,7 +16,7 @@ static int rightY = MAX_PADDLE_Y / 2;
 static void drawPaddle(int x, int y, uint8_t colour)
 {
     for (int offset = 0; offset < PADDLE_HEIGHT; ++offset) {
-        setPixel(x, y + offset, colour);
+        setPixel(x, y + offset, colour); //keep x fixed but draw the paddle from top to bottom.
     }
 }
 
@@ -37,9 +37,9 @@ static int updatePaddle(int x, int y, uint8_t colour, uint32_t adc)
     drawPaddle(x, y, OFF);
 
     if (targetY > y) {
-        y++;
+        y++; //move paddle one down.
     } else {
-        y--;
+        y--; //move paddle one up.
     }
 
     drawPaddle(x, y, colour);
