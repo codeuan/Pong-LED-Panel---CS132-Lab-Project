@@ -8,8 +8,8 @@ void joystickInitPins(void)
     rcc_periph_clock_enable(RCC_GPIOA); //enable the clock for port A, so we can send prompts to it.
     rcc_periph_clock_enable(RCC_GPIOC);  //enable the clock for port C, so we can send prompts to it.
     
-    gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1); //set up pins 0 and 1 on port A.
-    gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1); //set up pins 0 and 1 on port C.
+    gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1); //set up pin 0 on port A.
+    gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1); //set up pin 0 on port C.
 }
 
 void joystickInitADC(void)
@@ -25,14 +25,11 @@ void joystickInitADC(void)
     adc_calibrate(ADC1); 
     adc_calibrate(ADC2); //find offset at 0V and calibrate accordingly.
   
-    uint8_t joystickAChannels[] = {1, 2};  // PA0 and PA1
-    uint8_t joystickBChannels[] = {6, 7};  // PC0 and PC1  
+    uint8_t joystickAChannels[] = {1};  // PA0.
+    uint8_t joystickBChannels[] = {6};  // PC0.
 
-    adc_set_regular_sequence(ADC1, 2, joystickAChannels); //configure input pins for ADC1. Each channel is one axis.
-    adc_set_regular_sequence(ADC2, 2, joystickBChannels); //configure input pins for ADC2. Each channel is one axis.
-
-    ADC_CFGR1(ADC1) |= ADC_CFGR1_AUTDLY; //make sure ADC1 reads only one axis at a time.
-    ADC_CFGR1(ADC2) |= ADC_CFGR1_AUTDLY; //make sure ADC2 reads only one axis at a time.
+    adc_set_regular_sequence(ADC1, 1, joystickAChannels); //configure input pins for ADC1. Each channel is one axis.
+    adc_set_regular_sequence(ADC2, 1, joystickBChannels); //configure input pins for ADC2. Each channel is one axis.
   
     adc_power_on(ADC1);
     adc_power_on(ADC2); //enable ADC ready for input.
@@ -40,8 +37,7 @@ void joystickInitADC(void)
 
 
 typedef struct {
-    uint16_t axis0;
-    uint16_t axis1;
+    uint16_t axis0; //only one axis matters.
 } JoystickReading; //the C equivalent of a "tuple".
 
 JoystickReading joystickRead(uint32_t adc)
@@ -54,11 +50,6 @@ JoystickReading joystickRead(uint32_t adc)
         //wait for the first axis to be ready.
     }
     reading.axis0 = adc_read_regular(adc); //take first reading.
-
-    while (!adc_eoc(adc)) {
-        //wait for the second axis to be ready.
-    }
-    reading.axis1 = adc_read_regular(adc); //take second reading.
 
     return reading; //return reading to main program
 }
