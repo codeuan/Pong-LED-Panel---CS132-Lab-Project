@@ -10,7 +10,7 @@
 #define BLUE  2
 #define GREEN 4 //"define" means replace all instances of GREEN with 4 BEFORE compilation.
 
-uint8_t framebuffer[HEIGHT][WIDTH] = {0}; //create empty array to store display. convention is [y][x].
+uint8_t framebuffer[HEIGHT][WIDTH] = {0}; /create empty array to store display. convention is [y][x].
 
 void pulseBit(uint8_t bit)
 {
