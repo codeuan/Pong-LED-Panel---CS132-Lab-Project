@@ -42,23 +42,23 @@ void joystickInitADC(void)
 typedef struct {
     uint16_t axis0;
     uint16_t axis1;
-} JoystickReading;
+} JoystickReading; //the C equivalent of a "tuple".
 
 JoystickReading joystickRead(uint32_t adc)
-{ //
-    JoystickReading reading;
+{ //return type is JoystickReading. function name is joystickRead.
+    JoystickReading reading; //declare the "tuple".
 
     adc_start_conversion_regular(adc);
 
     while (!adc_eoc(adc)) {
-        // Wait for the first axis.
+        //wait for the first axis to be ready.
     }
-    reading.axis0 = adc_read_regular(adc);
+    reading.axis0 = adc_read_regular(adc); //take first reading.
 
     while (!adc_eoc(adc)) {
-        // Wait for the second axis.
+        //wait for the second axis to be ready.
     }
-    reading.axis1 = adc_read_regular(adc);
+    reading.axis1 = adc_read_regular(adc); //take second reading.
 
-    return reading;
+    return reading; //return reading to main program
 }
