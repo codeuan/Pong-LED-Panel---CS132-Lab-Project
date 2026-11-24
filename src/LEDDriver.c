@@ -70,10 +70,10 @@ void sendRowPair(uint8_t row,
                  uint32_t bottomBlue,
                  uint32_t bottomGreen)
 {
-    // Select the row pair
+    //select the row pair
     selectRow(row);
 
-    // Keep the old display visible while updating
+    //keep the old display visible while updating
     gpio_set(GPIOC, GPIO8);
 
     // Send the furthest registers first
@@ -85,7 +85,7 @@ void sendRowPair(uint8_t row,
     send32Bits(topBlue);
     send32Bits(topRed);
 
-    // Active-low latch: transfer the new data and display it.
+    //the latch is active-low, we need to clear it first. 
     gpio_clear(GPIOC, GPIO8);
     gpio_set(GPIOC, GPIO8);
 }
@@ -94,13 +94,13 @@ void setPixel(int x, int y, uint8_t colour)
 {
     /*select coordinates of pixel to be changed.*/
   
-    // Ignore coordinates outside the display
+    //ignore coordinates outside the display
     if (x < 0 || x >= WIDTH ||
         y < 0 || y >= HEIGHT) {
         return;
     }
 
-    // Store the desired colour
+    //store the desired colour
     framebuffer[y][x] = colour & 0x07;
 }
 
@@ -108,34 +108,34 @@ void setPixel(int x, int y, uint8_t colour)
 void refreshDisplay(void)
 {
     /*refresh display according to framebuffer. */
-    // Iterate through the 16 row pairs
+    //iterate through the 16 row pairs
     for (int row = 0; row < 16; row++) {
 
         uint32_t topRed = 0, topBlue = 0, topGreen = 0;
         uint32_t bottomRed = 0, bottomBlue = 0, bottomGreen = 0;
 
-        // Examine all 32 columns
+        //examine all 32 columns
         for (int x = 0; x < 32; x++) {
 
-            // Find the bit representing this column
+            //find the bit representing this column
             uint32_t mask = 1U << (31 - x);
 
-            // Read colours from our framebuffer
+            //read colours from our framebuffer
             uint8_t top = framebuffer[row][x];
             uint8_t bottom = framebuffer[row + 16][x];
 
-            // Construct the top row's colour registers
+            //construct the top row's colour registers
             if (top & RED)   topRed |= mask; //the OR operator preserves existing bits.
             if (top & BLUE)  topBlue |= mask;
             if (top & GREEN) topGreen |= mask;
 
-            // Construct the bottom row's colour registers
+            //construct the bottom row's colour registers
             if (bottom & RED)   bottomRed |= mask;
             if (bottom & BLUE)  bottomBlue |= mask;
             if (bottom & GREEN) bottomGreen |= mask;
         }
 
-        //Transmit all six registers.
+        //transmit all six registers.
         sendRowPair(row,
                     topRed, topBlue, topGreen,
                     bottomRed, bottomBlue, bottomGreen);
