@@ -26,7 +26,7 @@ struct Ball {
 static int leftY = MAX_PADDLE_Y / 2;
 static int rightY = MAX_PADDLE_Y / 2;
 
-
+int nextXPosition;
 
 static void drawPaddle(int x, int y, uint8_t colour)
 {
@@ -142,4 +142,11 @@ void gameInit(void)
 
     ball.vel_x = starting_X_velocities[rand() % 2];
     ball.vel_y = starting_Y_velocities[rand() % 2];
+
+    nextXPosition = ball.x + ball.vel_x;
+    if nextXPosition < 0 { //ball has overshot the left edge, player two scores.
+        OutOfBounds(2);
+    } else if (nextXPosition > 31) {//ball has overshot the right edge, player one scores.
+        OutOfBounds(1);
+    }
 }
