@@ -145,8 +145,8 @@ void gameInit(void)
 
     nextXPosition = ball.x + ball.vel_x;
     if nextXPosition < 0 { //ball has overshot the left edge, player two scores.
-        OutOfBounds(2);
+        outOfBounds(2);
     } else if (nextXPosition > 31) {//ball has overshot the right edge, player one scores.
-        OutOfBounds(1);
+        outOfBounds(1);
     }
 }
