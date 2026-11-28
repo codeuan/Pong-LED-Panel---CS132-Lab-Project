@@ -170,3 +170,46 @@ void refreshDisplay(void)
                     bottomRed, bottomBlue, bottomGreen);
     }
 }
+
+
+void drawWin(int x, int y, uint8_t colour) { //set by upper leftmost pixel.
+    // W
+    setPixel(x, y, colour);
+    setPixel(x + 2, y, colour);
+    setPixel(x + 4, y, colour);
+
+    setPixel(x, y + 1, colour);
+    setPixel(x + 2, y + 1, colour);
+    setPixel(x + 4, y + 1, colour);
+
+    setPixel(x, y + 2, colour);
+    setPixel(x + 1, y + 2, colour);
+    setPixel(x + 2, y + 2, colour);
+    setPixel(x + 3, y + 2, colour);
+    setPixel(x + 4, y + 2, colour);
+
+    // I
+    setPixel(x + 7, y, colour);
+    setPixel(x + 7, y + 1,colour);
+    setPixel(x + 7, y + 2,colour);
+    
+    // N
+    setPixel(x + 9,  y, colour);
+    setPixel(x + 10, y, colour);
+    setPixel(x + 11, y, colour);
+    
+    setPixel(x + 9, y + 1, colour);
+    setPixel(x + 10, y + 1, colour);
+    setPixel(x + 11, y + 1,colour);
+    
+    setPixel(x + 9,  y + 2, colour);
+    setPixel(x + 11, y + 2, colour);
+}
+
+void drawTallies(int x, int y, int score, uint8_t colour) {
+    for (int i = 0; i < score; i++) {
+        for (int j = 0; j < 5; j++) {
+            setPixel(x + 2 * i, y + j, colour); //tallies are 2 pixels apart.
+        }
+    }
+}
